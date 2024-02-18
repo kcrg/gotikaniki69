@@ -118,6 +118,8 @@
             img.style.userSelect = 'none';
             img.style.webkitUserSelect = 'none';
             document.body.appendChild(img);
+            slap.src = `/assets/samples/slap${index ?? 2}.mp3`
+            slap.play()
             setTimeout(() => document.body.removeChild(img), 2000);
         }
     </script>
