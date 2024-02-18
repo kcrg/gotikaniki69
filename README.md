@@ -4,6 +4,8 @@
 ## Introduction
 This repository contains the source code for the GotikAniki69, a playful project designed to provide users with an interactive experience. The webpage features a modern design, a connection button that triggers animations and sounds, and dynamic content updates through WebSocket connections.
 
+Inspired by https://youtu.be/uwIvo5A6F0M
+
 ## Features
 - Responsive design that works across devices.
 - Interactive buttons with sound effects.
