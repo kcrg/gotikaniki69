@@ -7,6 +7,9 @@
     <Nullable>enable</Nullable>
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile>
+    <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
 
 </Project>
