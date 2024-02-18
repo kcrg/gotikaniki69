@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Changing room</title>
+    <style>
+        html {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="connectionButton">
+        Say hello
+    </button>
+
+    <h1 id="info" style="display: none; color: white"> click enywhere </h1>
+    <script>
+        document.getElementById('connectionButton').addEventListener('click', () => connect())
+        const slap = document.createElement('audio')
+        slap.src = '/assets/samples/HUH2.mp3'
+        function connect() {
+            document.body.removeChild(document.getElementById('connectionButton'))
+
+            document.getElementById('info').style.display = 'block'
+            setTimeout(() => document.body.removeChild(document.getElementById('info')), 2000)
+
+            const socket = new WebSocket('ws://gotikaniki69.com:8081')
+            socket.addEventListener('open', () => {
+                document.body.addEventListener('pointerdown', (evt) => {
+                    console.log(evt)
+                    socket.send(JSON.stringify({ x: evt.clientX - 200, y: evt.clientY - 260 }))
+                })
+            })
+
+
+
+            socket.addEventListener('message', (evt) => {
+                const msg = JSON.parse(evt.data)
+                console.log(msg)
+                switch (msg.type) {
+                    case 'hello': slap.play(); break
+                    case 'hit': onHit(msg.payload); break
+                }
+
+            })
+        }
+
+        function onHit(payload) {
+            const { x, y, index } = payload
+
+            console.log(payload)
+            const img = document.createElement('img')
+            img.src = '/assets/gachi-gachimuchi.gif'
+            img.style.position = 'absolute';
+            img.style.scale = `${index % 2 === 0 ? '-' : ''}25% 25%`
+            img.style.top = `${y}px`
+            img.style.left = `${x}px`
+            img.style.pointerEvents = 'none'
+            slap.src = `/assets/samples/slap${index ?? 2}.mp3`
+            slap.play()
+
+            document.body.appendChild(img)
+            setTimeout(() => document.body.removeChild(img), 2000)
+        }
+    </script>
+</body>
+
+</html>
