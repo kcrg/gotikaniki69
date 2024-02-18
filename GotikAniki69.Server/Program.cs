@@ -61,7 +61,7 @@ internal static class Program
                         {
                             X = Math.Max(0, msg?.X ?? 0),
                             Y = Math.Max(0, msg?.Y ?? 0),
-                            Index = new Random().Next(1, 8)
+                            Index = new Random().Next(1, 7)
                         }
                     }, JsonContext.Default.Response);
 
