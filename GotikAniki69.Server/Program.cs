@@ -9,7 +9,7 @@ namespace GotikAniki69.Server;
 
 public static class Program
 {
-    private static readonly ConcurrentDictionary<Guid, WebSocket> connections = [];
+    private static readonly ConcurrentDictionary<Guid, UserConnectionModel> connections = [];
     private const string HelloMessage = "{\"type\":\"hello\"}";
     private static readonly Random random = new();
 
@@ -43,7 +43,17 @@ public static class Program
             var id = Guid.NewGuid();
             webSocket = (await context.AcceptWebSocketAsync(subProtocol: null).ConfigureAwait(false)).WebSocket;
 
-            _ = connections.TryAdd(id, webSocket);
+            // Extract and parse query string
+            var queryString = context.Request.Url?.Query;
+            var queryParams = ParseQueryString(queryString);
+
+            // Example use: Print the 'name' query parameter
+            if (queryParams.TryGetValue("name", out var name))
+            {
+                Console.WriteLine($"Connection received with name: {name}");
+            }
+
+            _ = connections.TryAdd(id, new UserConnectionModel(webSocket, name!));
 
             await SendAsync(webSocket, HelloMessage).ConfigureAwait(false);
 
@@ -57,7 +67,7 @@ public static class Program
                 }
                 else
                 {
-                    await ProcessMessageAsync(buffer, result).ConfigureAwait(false);
+                    await ProcessMessageAsync(id, buffer, result).ConfigureAwait(false);
                 }
             }
         }
@@ -69,11 +79,11 @@ public static class Program
         {
             if (webSocket != null)
             {
-                foreach (var pair in connections)
+                foreach (var connection in connections)
                 {
-                    if (pair.Value == webSocket)
+                    if (connection.Value.WebSocket == webSocket)
                     {
-                        _ = connections.TryRemove(pair.Key, out _);
+                        _ = connections.TryRemove(connection.Key, out _);
                         break;
                     }
                 }
@@ -82,10 +92,12 @@ public static class Program
         }
     }
 
-    private static async Task ProcessMessageAsync(ArraySegment<byte> buffer, WebSocketReceiveResult result)
+    private static async Task ProcessMessageAsync(Guid id, ArraySegment<byte> buffer, WebSocketReceiveResult result)
     {
         var message = Encoding.UTF8.GetString(buffer.Array ?? [], buffer.Offset, result.Count);
         Console.WriteLine($"Received: {message}");
+
+        var name = connections.TryGetValue(id, out var sender) ? sender.UserName : string.Empty;
 
         var msg = JsonSerializer.Deserialize(message, JsonContext.Default.Coordinates);
         var response = JsonSerializer.Serialize(new Response
@@ -93,17 +105,18 @@ public static class Program
             Type = "hit",
             Payload = new Payload
             {
+                Index = random.Next(1, 7),
+                Nick = name,
                 X = Math.Max(0, msg?.X ?? 0),
-                Y = Math.Max(0, msg?.Y ?? 0),
-                Index = random.Next(1, 7)
+                Y = Math.Max(0, msg?.Y ?? 0)
             }
         }, JsonContext.Default.Response);
 
-        foreach (var socket in connections.Values)
+        foreach (var connection in connections.Values)
         {
-            if (socket.State == WebSocketState.Open)
+            if (connection.WebSocket.State == WebSocketState.Open)
             {
-                await SendAsync(socket, response).ConfigureAwait(false);
+                await SendAsync(connection.WebSocket, response).ConfigureAwait(false);
             }
         }
     }
@@ -112,5 +125,24 @@ public static class Program
     {
         var buffer = Encoding.UTF8.GetBytes(data);
         await webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, CancellationToken.None).ConfigureAwait(false);
+    }
+
+    private static Dictionary<string, string> ParseQueryString(string? queryString)
+    {
+        var queryParameters = new Dictionary<string, string>();
+        if (!string.IsNullOrEmpty(queryString) && queryString.StartsWith('?'))
+        {
+            queryString = queryString.Substring(1); // Remove '?' at the beginning
+            foreach (var pair in queryString.Split('&'))
+            {
+                var parts = pair.Split('=');
+                if (parts.Length == 2)
+                {
+                    var key = WebUtility.UrlDecode(parts[0]);
+                    queryParameters[key] = WebUtility.UrlDecode(parts[1]);
+                }
+            }
+        }
+        return queryParameters;
     }
 }

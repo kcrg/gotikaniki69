@@ -18,6 +18,18 @@ public class Response
 }
 public class Payload
 {
+    [JsonPropertyName("index")]
+    public int Index
+    {
+        get; set;
+    }
+
+    [JsonPropertyName("nick")]
+    public string? Nick
+    {
+        get; set;
+    }
+
     [JsonPropertyName("x")]
     public double X
     {
@@ -26,12 +38,6 @@ public class Payload
 
     [JsonPropertyName("y")]
     public double Y
-    {
-        get; set;
-    }
-
-    [JsonPropertyName("index")]
-    public int Index
     {
         get; set;
     }
