@@ -59,6 +59,11 @@
             -moz-user-select: none;
             -ms-user-select: none;
         }
+
+        @font-face {
+            font-family: 'GothicFont';
+            src: url('/fonts/gothicfont.ttf') format('truetype');
+        }
     </style>
 </head>
 
@@ -148,6 +153,9 @@
             text.textContent = nick; // Set the nick as text
             text.style.textAlign = 'center'; // Center the text below the image
             text.style.marginTop = '5px'; // Adjust spacing between image and text
+            text.style.fontFamily = 'GothicFont';
+            text.style.fontSize = '16px';
+            text.style.color = 'grey';
 
             // Append img and text to the container
             container.appendChild(img);
