@@ -1,13 +1,13 @@
 document.getElementById('connectionButton').addEventListener('click', () => connect())
 const slap = document.createElement('audio')
 slap.src = '/assets/samples/HUH2.mp3'
-let socket; // Declare the socket variable in the outer scope for broader accessibility
+let socket;
 
 function connect() {
     var name = document.getElementById('name').value;
     var skinSelectElement = document.getElementById('skinSelect');
 
-    if (name && skinId) {
+    if (name) {
         const landingBlock = document.getElementById('landingBlock');
         landingBlock.parentElement.removeChild(landingBlock);
 
@@ -39,13 +39,6 @@ function connect() {
     }
 }
 
-// Listen for the beforeunload event to close the WebSocket connection
-window.addEventListener('beforeunload', () => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.close(); // Close the WebSocket connection
-    }
-});
-
 function onHit(payload) {
     const { index, nick, skinId, x, y } = payload;
     console.log(payload);
@@ -64,10 +57,10 @@ function onHit(payload) {
     img.style.height = 'auto';
 
     // Create a text element
-    const text = document.createElement('div'); // or 'span'
-    text.textContent = nick; // Set the nick as text
-    text.style.textAlign = 'center'; // Center the text below the image
-    text.style.marginTop = '5px'; // Adjust spacing between image and text
+    const text = document.createElement('div');
+    text.textContent = nick;
+    text.style.textAlign = 'center';
+    text.style.marginTop = '5px';
     text.style.fontFamily = 'GothicFont';
     text.style.fontSize = '16px';
     text.style.color = 'grey';
@@ -80,11 +73,11 @@ function onHit(payload) {
 
     // Adjusted for container fade out and removal
     container.style.opacity = '1';
-    container.style.transition = 'opacity 300ms ease-out'; // Fade out effect
-    setTimeout(() => container.style.opacity = '0', 2000 - 300); // Start fade out
-    setTimeout(() => document.body.removeChild(container), 2300); // Remove container
+    container.style.transition = 'opacity 300ms ease-out';
+    setTimeout(() => container.style.opacity = '0', 2000 - 300);
+    setTimeout(() => document.body.removeChild(container), 2300);
 
-    // Audio playback logic remains the same
+    // Audio playback logic
     slap.src = `/assets/samples/slap${index ?? 2}.mp3`;
     slap.volume = 0.5;
     slap.play();
