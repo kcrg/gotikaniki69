@@ -5,7 +5,7 @@ let socket; // Declare the socket variable in the outer scope for broader access
 
 function connect() {
     var name = document.getElementById('name').value;
-    var skinId = document.getElementById('skinId').value;
+    var skinSelectElement = document.getElementById('skinSelect');
 
     if (name && skinId) {
         const landingBlock = document.getElementById('landingBlock');
@@ -15,7 +15,7 @@ function connect() {
         info.style.display = 'block';
         setTimeout(() => info.parentElement.removeChild(info), 3000);
 
-        var socketUrl = 'ws://gotikaniki69.com:8081?name=' + encodeURIComponent(name) + '&skinId=' + encodeURIComponent(skinId);
+        var socketUrl = 'ws://gotikaniki69.com:8081?name=' + encodeURIComponent(name) + '&skinId=' + encodeURIComponent(skinSelectElement.value);
         socket = new WebSocket(socketUrl);
 
         socket.addEventListener('open', () => {
@@ -59,7 +59,7 @@ function onHit(payload) {
     container.style.userSelect = 'none';
 
     const img = document.createElement('img');
-    img.src = `/assets/gachi${skinId}.mp3`;
+    img.src = `/assets/gachi${skinId}.gif`;
     img.style.width = '100px';
     img.style.height = 'auto';
 
