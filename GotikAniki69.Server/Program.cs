@@ -10,7 +10,6 @@ namespace GotikAniki69.Server;
 public static class Program
 {
     private static readonly ConcurrentDictionary<Guid, UserConnectionModel> connections = [];
-    private const string HelloMessage = "{\"type\":\"hello\"}";
     private static readonly Random random = new();
 
     public static async Task Main(string[] args)
@@ -47,15 +46,19 @@ public static class Program
             var queryString = context.Request.Url?.Query;
             var queryParams = ParseQueryString(queryString);
 
-            // Example use: Print the 'name' query parameter
             if (queryParams.TryGetValue("name", out var name))
             {
                 Console.WriteLine($"Connection received with name: {name}");
             }
+            if (queryParams.TryGetValue("skinId", out var skinId))
+            {
+                Console.WriteLine($"Connection received with skin ID: {skinId}");
+            }
 
-            _ = connections.TryAdd(id, new UserConnectionModel(webSocket, name!));
+            _ = connections.TryAdd(id, new UserConnectionModel(webSocket, name!, skinId!));
 
-            await SendAsync(webSocket, HelloMessage).ConfigureAwait(false);
+            var helloMessage = JsonSerializer.Serialize(new ResponseModel { Type = nameof(MessageTypeEnum.Hello) }, JsonContext.Default.ResponseModel);
+            await SendAsync(webSocket, helloMessage).ConfigureAwait(false);
 
             while (webSocket.State == WebSocketState.Open)
             {
@@ -84,6 +87,7 @@ public static class Program
                     if (connection.Value.WebSocket == webSocket)
                     {
                         _ = connections.TryRemove(connection.Key, out _);
+                        Console.WriteLine($"Active after remove: {connections.Count}");
                         break;
                     }
                 }
@@ -97,20 +101,28 @@ public static class Program
         var message = Encoding.UTF8.GetString(buffer.Array ?? [], buffer.Offset, result.Count);
         Console.WriteLine($"Received: {message}");
 
-        var name = connections.TryGetValue(id, out var sender) ? sender.UserName : string.Empty;
-
-        var msg = JsonSerializer.Deserialize(message, JsonContext.Default.Coordinates);
-        var response = JsonSerializer.Serialize(new Response
+        if (!connections.TryGetValue(id, out var sender))
         {
-            Type = "hit",
-            Payload = new Payload
+            Console.WriteLine("Sender not found!");
+            return;
+        }
+
+        var msg = JsonSerializer.Deserialize(message, JsonContext.Default.CoordinatesModel);
+        var response = JsonSerializer.Serialize(new ResponseModel
+        {
+            Type = nameof(MessageTypeEnum.Hit),
+            Payload = new PayloadModel
             {
                 Index = random.Next(1, 7),
-                Nick = name,
+                NickName = sender.NickName,
+                SkinId = sender.SkinId,
                 X = Math.Max(0, msg?.X ?? 0),
                 Y = Math.Max(0, msg?.Y ?? 0)
             }
-        }, JsonContext.Default.Response);
+        }, JsonContext.Default.ResponseModel);
+
+        Console.WriteLine($"Sended: {response}");
+        Console.WriteLine($"Active connections: {connections.Count}");
 
         foreach (var connection in connections.Values)
         {

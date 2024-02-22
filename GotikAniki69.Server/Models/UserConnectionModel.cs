@@ -2,9 +2,11 @@
 
 namespace GotikAniki69.Server.Models;
 
-public class UserConnectionModel(WebSocket webSocket, string userName)
+public class UserConnectionModel(WebSocket webSocket, string nickName, string skinId)
 {
     public WebSocket WebSocket { get; set; } = webSocket;
 
-    public string? UserName { get; set; } = userName;
+    public string? NickName { get; set; } = nickName;
+
+    public string? SkinId { get; set; } = skinId;
 }

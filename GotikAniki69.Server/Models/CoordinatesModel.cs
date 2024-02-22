@@ -2,7 +2,7 @@
 
 namespace GotikAniki69.Server.Models;
 
-public class Coordinates
+public class CoordinatesModel
 {
     [JsonPropertyName("x")]
     public double X

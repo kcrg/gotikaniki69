@@ -5,8 +5,9 @@ let socket; // Declare the socket variable in the outer scope for broader access
 
 function connect() {
     var name = document.getElementById('name').value;
+    var skinId = document.getElementById('skinId').value;
 
-    if (name) {
+    if (name && skinId) {
         const landingBlock = document.getElementById('landingBlock');
         landingBlock.parentElement.removeChild(landingBlock);
 
@@ -14,7 +15,7 @@ function connect() {
         info.style.display = 'block';
         setTimeout(() => info.parentElement.removeChild(info), 3000);
 
-        var socketUrl = 'ws://gotikaniki69.com:8081?name=' + encodeURIComponent(name);
+        var socketUrl = 'ws://gotikaniki69.com:8081?name=' + encodeURIComponent(name) + '&skinId=' + encodeURIComponent(skinId);
         socket = new WebSocket(socketUrl);
 
         socket.addEventListener('open', () => {
@@ -28,8 +29,8 @@ function connect() {
             const msg = JSON.parse(evt.data);
             console.log(msg);
             switch (msg.type) {
-                case 'hello': slap.play(); break;
-                case 'hit': onHit(msg.payload); break;
+                case 'Hello': slap.play(); break;
+                case 'Hit': onHit(msg.payload); break;
             }
         });
     }
@@ -46,7 +47,7 @@ window.addEventListener('beforeunload', () => {
 });
 
 function onHit(payload) {
-    const { index, nick, x, y } = payload;
+    const { index, nick, skinId, x, y } = payload;
     console.log(payload);
 
     // Create a container for the image and text
@@ -56,10 +57,9 @@ function onHit(payload) {
     container.style.left = `${x}px`;
     container.style.pointerEvents = 'none';
     container.style.userSelect = 'none';
-    container.style.webkitUserSelect = 'none';
 
     const img = document.createElement('img');
-    img.src = '/assets/gachi-gachimuchi.gif';
+    img.src = `/assets/gachi${skinId}.mp3`;
     img.style.width = '100px';
     img.style.height = 'auto';
 
@@ -86,5 +86,6 @@ function onHit(payload) {
 
     // Audio playback logic remains the same
     slap.src = `/assets/samples/slap${index ?? 2}.mp3`;
+    slap.volume = 0.5;
     slap.play();
 }
