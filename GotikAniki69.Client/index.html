@@ -55,7 +55,6 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin: 10px 0;
         }
 
         .button:hover {
@@ -78,6 +77,51 @@
             font-family: 'GothicFont';
             src: url('/fonts/gothicfont.ttf') format('truetype');
         }
+
+        body, h1, p, input, select, option, a {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+        .m-bot-control {
+            margin-bottom: 20px;
+        }
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+        .box {
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        label {
+            color: #979797;
+            padding-left: 15px;
+            font-size: 14px;
+        }
+        input, select {
+            line-height: 40px;
+            height: 40px;
+            background-color: #5a5a5a;
+            color: rgb(224, 224, 224);
+            font-size: 15px;
+            border: none;
+            padding: 0 15px;
+            border-radius: 5px;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+        input:hover, select:hover {
+            background-color: #6b6b6b;
+        }
+        option {
+            padding: 10px;
+        }
     </style>
 </head>
 
@@ -86,15 +130,20 @@
         <h1>Witaj na GotikAniki69!</h1>
         <p>Doświadcz prawdziwej zabawy w czerwonej latarnii!</p>
 
-        <label for="name">Nick:</label>
-        <input type="text" id="name" name="name" required minlength="2" maxlength="24" size="16" />
-        <label for="skinSelect">Wybierz skin:</label>
-        <select id="skinSelect" name="skinSelect">
-            <option value="1">Fikołek</option>
-            <option value="2">Klepanie</option>
-        </select>
-        <button id="connectionButton" class="button" type="submit">Przywitaj się</button>
-
+        <div class="box">
+            <div class="m-bot-control form-field">
+                <label for="name">Nick:</label>
+                <input type="text" id="name" name="name" required minlength="2" maxlength="24" size="16" />
+            </div>
+            <div class="m-bot-control form-field">
+                <label for="skinSelect">Skin:</label>
+                <select id="skinSelect" name="skinSelect">
+                    <option value="1">Fikołek</option>
+                    <option value="2">Klepanie</option>
+                </select>
+            </div>
+            <button id="connectionButton" class="button" type="submit">Przywitaj się</button>
+        </div>
         <p>Jeśli masz z czymś problem, lub chciałbyś coś dodać do tej zabawy wejdź na <a
                 href="https://github.com/kcrg/gotikaniki69" target="_blank">GitHuba</a>.</p>
     </div>
