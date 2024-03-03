@@ -29,8 +29,20 @@ function connect() {
             const msg = JSON.parse(evt.data);
             console.log(msg);
             switch (msg.type) {
-                case 'Hello': slap.play(); break;
+                case 'Hello': {
+                    const ball = document.getElementById('ball');
+                    if(ball) {
+                        ball.style.display = `block`;
+                    }
+                    const goal = document.getElementById('goal');
+                    if(goal) {
+                        goal.style.display = `block`;
+                    }
+                    slap.play();
+                    break;
+                }
                 case 'Hit': onHit(msg.payload); break;
+                case 'BallMovement': showBall(msg.payload); break;
             }
         });
     }
@@ -81,4 +93,13 @@ function onHit(payload) {
     slap.src = `/assets/samples/slap${index ?? 2}.mp3`;
     slap.volume = 0.5;
     slap.play();
+}
+
+function showBall(payload) {
+    const { x, y } = payload;
+    const ball = document.getElementById('ball');
+    if(ball) {
+        ball.style.left = `${x}px`;
+        ball.style.top = `${y}px`;
+    }
 }

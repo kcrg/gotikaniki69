@@ -3,5 +3,6 @@
 public enum MessageTypeEnum
 {
     Hello,
-    Hit
+    Hit,
+    BallMovement
 }

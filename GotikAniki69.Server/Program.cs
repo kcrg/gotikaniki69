@@ -12,6 +12,11 @@ public static class Program
     private static readonly ConcurrentDictionary<Guid, UserConnectionModel> connections = [];
     private static readonly Random random = new();
 
+    private static CoordinatesModel ballPosition = new CoordinatesModel {
+        X = 1000,
+        Y = 400
+    };
+
     public static async Task Main(string[] args)
     {
         var httpListener = new HttpListener();
@@ -59,6 +64,17 @@ public static class Program
 
             var helloMessage = JsonSerializer.Serialize(new ResponseModel { Type = nameof(MessageTypeEnum.Hello) }, JsonContext.Default.ResponseModel);
             await SendAsync(webSocket, helloMessage).ConfigureAwait(false);
+
+            var ballMovementResponse = JsonSerializer.Serialize(new ResponseModel
+            {
+                Type = nameof(MessageTypeEnum.BallMovement),
+                Payload = new PayloadModel
+                {
+                    X = ballPosition.X,
+                    Y = ballPosition.Y
+                }
+            }, JsonContext.Default.ResponseModel);
+            await SendAsync(webSocket, ballMovementResponse).ConfigureAwait(false);
 
             while (webSocket.State == WebSocketState.Open)
             {
@@ -108,18 +124,65 @@ public static class Program
         }
 
         var msg = JsonSerializer.Deserialize(message, JsonContext.Default.CoordinatesModel);
-        var response = JsonSerializer.Serialize(new ResponseModel
-        {
-            Type = nameof(MessageTypeEnum.Hit),
-            Payload = new PayloadModel
+        var payload = new PayloadModel
             {
                 Index = random.Next(1, 7),
-                NickName = sender.NickName,
+                NickName = sender.NickName + " (" + sender.Score.ToString() + ")",
                 SkinId = sender.SkinId,
                 X = Math.Max(0, msg?.X ?? 0),
                 Y = Math.Max(0, msg?.Y ?? 0)
+            };
+        var distance = Math.Sqrt(Math.Pow(ballPosition.X - payload.X, 2) + Math.Pow(ballPosition.Y- payload.Y, 2)) ;
+        if (distance < 100) {
+            var force = random.Next(20, 60);
+            var newBallPosition = new CoordinatesModel 
+                {
+                    X =  ballPosition.X + (ballPosition.X - payload.X)/distance * force,
+                    Y =  ballPosition.Y + (ballPosition.Y - payload.Y)/distance * force,
+                };
+            // out of the pitch
+            if(newBallPosition.X < 0 || newBallPosition.Y < 0 || newBallPosition.Y> 800 || newBallPosition.X > 1600) {
+                newBallPosition.X = random.Next(600, 1200);
+                newBallPosition.Y = random.Next(300, 750);
             }
+            // goal score
+            if(newBallPosition.X > 100 && newBallPosition.X < 150 && newBallPosition.Y > 340 && newBallPosition.Y < 500) {
+                newBallPosition.X = random.Next(600, 1200);
+                newBallPosition.Y = random.Next(300, 750);
+                payload.Index = 8;
+                sender.Score++;
+                payload.NickName = sender.NickName + " (" + sender.Score.ToString() + ")";
+            }
+            var ballMovementResponse = JsonSerializer.Serialize(new ResponseModel
+            {
+                Type = nameof(MessageTypeEnum.BallMovement),
+                Payload = new PayloadModel
+                {
+                    X = newBallPosition.X,
+                    Y = newBallPosition.Y
+                }
+            }, JsonContext.Default.ResponseModel);
+            ballPosition.X = newBallPosition.X;
+            ballPosition.Y = newBallPosition.Y;
+
+            Console.WriteLine($"Sended: {ballMovementResponse}");
+            Console.WriteLine($"Active connections: {connections.Count}");
+
+            foreach (var connection in connections.Values)
+            {
+                if (connection.WebSocket.State == WebSocketState.Open)
+                {
+                    await SendAsync(connection.WebSocket, ballMovementResponse).ConfigureAwait(false);
+                }
+            }
+        }
+        var response = JsonSerializer.Serialize(new ResponseModel
+        {
+            Type = nameof(MessageTypeEnum.Hit),
+            Payload = payload
         }, JsonContext.Default.ResponseModel);
+
+
 
         Console.WriteLine($"Sended: {response}");
         Console.WriteLine($"Active connections: {connections.Count}");
