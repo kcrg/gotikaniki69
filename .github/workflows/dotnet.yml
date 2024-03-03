@@ -1,0 +1,34 @@
+name: Build .NET Application
+
+on:
+  push:
+    branches:
+      - main  # Set this to your default branch if it's not 'main'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This will use the latest Ubuntu runner
+
+    steps:
+    - uses: actions/checkout@v3
+      name: Checkout code
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '8.0.x'  # Specify the .NET version
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --runtime linux-x64 --no-restore
+
+    - name: Publish
+      run: dotnet publish --configuration Release --runtime linux-x64 --no-restore --output ./publish
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: published-app
+        path: ./publish/
