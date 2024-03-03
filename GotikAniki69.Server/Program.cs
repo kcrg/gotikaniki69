@@ -149,7 +149,7 @@ public static class Program
                 newBallPosition.Y = random.Next(300, 750);
             }
             // goal score
-            if (newBallPosition.X > 100 && newBallPosition.X < 150 && newBallPosition.Y > 340 && newBallPosition.Y < 500)
+            if (newBallPosition.X > 100 && newBallPosition.X < 150 && newBallPosition.Y > 300 && newBallPosition.Y < 500)
             {
                 newBallPosition.X = random.Next(600, 1200);
                 newBallPosition.Y = random.Next(300, 750);
