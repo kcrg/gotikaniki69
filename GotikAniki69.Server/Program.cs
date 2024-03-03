@@ -18,7 +18,9 @@ public static class Program
         Y = 400
     };
 
-    public static async Task Main(string[] args)
+    public static async Task Main(string[] args) => await Initialize();
+
+    private static async Task Initialize()
     {
         var httpListener = new HttpListener();
         httpListener.Prefixes.Add("http://gotikaniki69.com:8081/");
@@ -113,6 +115,7 @@ public static class Program
         }
     }
 
+    // TODO: maybe merge sending ball movement and hit
     private static async Task ProcessMessageAsync(Guid id, ArraySegment<byte> buffer, WebSocketReceiveResult result)
     {
         var message = Encoding.UTF8.GetString(buffer.Array ?? [], buffer.Offset, result.Count);
@@ -128,7 +131,7 @@ public static class Program
         var payload = new PayloadModel
         {
             Index = random.Next(1, 7),
-            NickName = sender.NickName + " (" + sender.Score.ToString() + ")",
+            NickName = $"{sender.NickName} ({sender.Score})",
             SkinId = sender.SkinId,
             X = Math.Max(0, msg?.X ?? 0),
             Y = Math.Max(0, msg?.Y ?? 0)
@@ -180,6 +183,7 @@ public static class Program
                 }
             }
         }
+
         var response = JsonSerializer.Serialize(new ResponseModel
         {
             Type = nameof(MessageTypeEnum.Hit),

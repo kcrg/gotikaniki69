@@ -5,7 +5,9 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishTrimmed>True</PublishTrimmed>
     <PublishAot>true</PublishAot>
+    <TrimMode>full</TrimMode>
     <InvariantGlobalization>true</InvariantGlobalization>
     <IsAotCompatible>true</IsAotCompatible>
     <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile>
