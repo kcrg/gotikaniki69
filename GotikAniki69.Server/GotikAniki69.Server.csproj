@@ -13,6 +13,7 @@
     <IsAotCompatible>true</IsAotCompatible>
     <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile>
     <OptimizationPreference>Speed</OptimizationPreference>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
 </Project>
