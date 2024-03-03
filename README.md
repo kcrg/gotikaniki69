@@ -19,6 +19,7 @@ The project utilizes a WebSocket connection for real-time interactions. This con
 
 ## Compilation with NativeAOT
 This project supports compilation with NativeAOT to produce a standalone, ahead-of-time compiled binary for improved performance and reduced startup times.
+https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot
 
 ## Contributing
 We welcome contributions and suggestions! Feel free to fork the repository, make changes, and submit pull requests. If you encounter any issues or have ideas for improvements, please open an issue.
