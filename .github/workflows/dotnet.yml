@@ -19,13 +19,13 @@ jobs:
         dotnet-version: '8.0.x'  # Specify the .NET version
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore GotikAniki69.Server/GotikAniki69.Server.csproj
 
     - name: Build
-      run: dotnet build --configuration Release --runtime linux-x64 --no-restore
+      run: dotnet build GotikAniki69.Server/GotikAniki69.Server.csproj --configuration Release --runtime linux-x64 --no-restore
 
     - name: Publish
-      run: dotnet publish --configuration Release --runtime linux-x64 --no-restore --output ./publish
+      run: dotnet publish GotikAniki69.Server/GotikAniki69.Server.csproj --configuration Release --runtime linux-x64 --no-restore --output ./publish
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
