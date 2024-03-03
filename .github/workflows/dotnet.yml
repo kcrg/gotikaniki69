@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest  # This will use the latest Ubuntu runner
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       name: Checkout code
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'  # Specify the .NET version
 
@@ -28,7 +28,7 @@ jobs:
       run: dotnet publish GotikAniki69.Server/GotikAniki69.Server.csproj --configuration Release --runtime linux-x64 --no-restore --output ./publish
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: published-app
         path: ./publish/
