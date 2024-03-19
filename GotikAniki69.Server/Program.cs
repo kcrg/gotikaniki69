@@ -25,7 +25,7 @@ public static class Program
         var httpListener = new HttpListener();
         httpListener.Prefixes.Add("http://gotikaniki69.com:8081/");
         httpListener.Start();
-        Console.WriteLine("WebSocket server started at ws://test.gotikaniki69.com:8081/");
+        Console.WriteLine("WebSocket server started at ws://gotikaniki69.com:8081/");
 
         while (true)
         {
