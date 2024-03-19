@@ -23,7 +23,7 @@ public static class Program
     private static async Task Initialize()
     {
         var httpListener = new HttpListener();
-        httpListener.Prefixes.Add("http://test.gotikaniki69.com:8081/");
+        httpListener.Prefixes.Add("http://gotikaniki69.com:8081/");
         httpListener.Start();
         Console.WriteLine("WebSocket server started at ws://test.gotikaniki69.com:8081/");
 
