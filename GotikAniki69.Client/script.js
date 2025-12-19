@@ -15,7 +15,8 @@ function connect() {
         info.style.display = 'block';
         setTimeout(() => info.parentElement.removeChild(info), 3000);
 
-        var socketUrl = 'ws://gotikaniki69.com:8081?name=' + encodeURIComponent(name) + '&skinId=' + encodeURIComponent(skinSelectElement.value);
+        const wsScheme = location.protocol === 'https:' ? 'wss' : 'ws';
+        var socketUrl = `${wsScheme}://${location.host}/ws?name=${encodeURIComponent(name)}&skinId=${encodeURIComponent(skinSelectElement.value)}`;
         socket = new WebSocket(socketUrl);
 
         socket.addEventListener('open', () => {
@@ -31,11 +32,11 @@ function connect() {
             switch (msg.type) {
                 case 'Hello': {
                     const ball = document.getElementById('ball');
-                    if(ball) {
+                    if (ball) {
                         ball.style.display = `block`;
                     }
                     const goal = document.getElementById('goal');
-                    if(goal) {
+                    if (goal) {
                         goal.style.display = `block`;
                     }
                     slap.play();
@@ -98,7 +99,7 @@ function onHit(payload) {
 function showBall(payload) {
     const { x, y } = payload;
     const ball = document.getElementById('ball');
-    if(ball) {
+    if (ball) {
         ball.style.left = `${x}px`;
         ball.style.top = `${y}px`;
     }

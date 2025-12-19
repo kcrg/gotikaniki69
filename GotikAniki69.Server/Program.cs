@@ -23,7 +23,7 @@ public static class Program
     private static async Task Initialize()
     {
         var httpListener = new HttpListener();
-        httpListener.Prefixes.Add("http://gotikaniki69.com:8081/");
+        httpListener.Prefixes.Add("http://localhost:8081/");
         httpListener.Start();
         Console.WriteLine("WebSocket server started at ws://gotikaniki69.com:8081/");
 
@@ -32,7 +32,7 @@ public static class Program
             var context = await httpListener.GetContextAsync().ConfigureAwait(false);
             if (context.Request.IsWebSocketRequest)
             {
-                _ = HandleConnectionAsync(context).ConfigureAwait(false);
+                await HandleConnectionAsync(context).ConfigureAwait(false);
             }
             else
             {
@@ -63,7 +63,7 @@ public static class Program
                 Console.WriteLine($"Connection received with skin ID: {skinId}");
             }
 
-            _ = connections.TryAdd(id, new UserConnectionModel(webSocket, name!, skinId!));
+            connections.TryAdd(id, new UserConnectionModel(webSocket, name!, skinId!));
 
             var helloMessage = JsonSerializer.Serialize(new ResponseModel { Type = nameof(MessageTypeEnum.Hello) }, JsonContext.Default.ResponseModel);
             await SendAsync(webSocket, helloMessage).ConfigureAwait(false);
@@ -105,7 +105,7 @@ public static class Program
                 {
                     if (connection.Value.WebSocket == webSocket)
                     {
-                        _ = connections.TryRemove(connection.Key, out _);
+                        connections.TryRemove(connection.Key, out _);
                         Console.WriteLine($"Active after remove: {connections.Count}");
                         break;
                     }
@@ -213,7 +213,7 @@ public static class Program
         var queryParameters = new Dictionary<string, string>();
         if (!string.IsNullOrEmpty(queryString) && queryString.StartsWith('?'))
         {
-            queryString = queryString.Substring(1); // Remove '?' at the beginning
+            queryString = queryString.Substring(1);
             foreach (var pair in queryString.Split('&'))
             {
                 var parts = pair.Split('=');
