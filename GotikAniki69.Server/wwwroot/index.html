@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#121212">
+    <title>Męska zabawa</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0px;
+        }
+
+        h1,
+        p {
+            margin: 20px 0;
+            font-family: 'SegoeUI';
+        }
+
+        a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-family: 'SegoeUI';
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        .button {
+            background-color: #0d6efd;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+            .button:hover {
+                background-color: #0b5ed7;
+            }
+
+        #info {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        @font-face {
+            font-family: 'SegoeUI';
+            src: url('/fonts/SegoeUI.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'GothicFont';
+            src: url('/fonts/gothicfont.ttf') format('truetype');
+        }
+
+        body, h1, p, input, select, option, a {
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        }
+
+        .m-bot-control {
+            margin-bottom: 20px;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .box {
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+            padding: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        label {
+            color: #979797;
+            padding-left: 15px;
+            font-size: 14px;
+        }
+
+        input, select {
+            line-height: 40px;
+            height: 40px;
+            background-color: #5a5a5a;
+            color: rgb(224, 224, 224);
+            font-size: 15px;
+            border: none;
+            padding: 0 15px;
+            border-radius: 5px;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+            input:hover, select:hover {
+                background-color: #6b6b6b;
+            }
+
+        option {
+            padding: 10px;
+        }
+        /* kontener hity */
+        .hit {
+            position: absolute;
+            left: 0;
+            top: 0;
+            pointer-events: none;
+            user-select: none;
+            opacity: 1;
+            will-change: transform, opacity;
+            transition: opacity 300ms ease-out;
+        }
+
+            .hit.fade {
+                opacity: 0;
+            }
+
+        .hit-text {
+            text-align: center;
+            margin-top: 5px;
+            font-family: GothicFont;
+            font-size: 22px;
+            color: grey;
+        }
+
+        #ball {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 50px;
+            height: 50px;
+            pointer-events: none;
+            user-select: none;
+            will-change: transform;
+            transition: transform 100ms linear; /* dostosuj */
+        }
+            #ball.moving {
+                animation: spin 300ms linear infinite;
+            }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="landingBlock" class="container">
+        <h1>Witaj na GotikAniki69!</h1>
+        <p>Doświadcz prawdziwej zabawy w czerwonej latarnii!</p>
+
+        <div class="box">
+            <div class="m-bot-control form-field">
+                <label for="name">Nick:</label>
+                <input type="text" id="name" name="name" required minlength="2" maxlength="24" size="16" />
+            </div>
+            <div class="m-bot-control form-field">
+                <label for="skinSelect">Skin:</label>
+                <select id="skinSelect" name="skinSelect">
+                    <option value="1">Fikołek</option>
+                    <option value="2">Klepanie</option>
+                </select>
+            </div>
+            <button id="connectionButton" class="button" type="submit">Przywitaj się</button>
+        </div>
+        <p>
+            Jeśli masz z czymś problem, lub chciałbyś coś dodać do tej zabawy wejdź na <a href="https://github.com/kcrg/gotikaniki69" target="_blank">GitHuba</a>.
+        </p>
+    </div>
+
+    <h1 id="info" style="display: none;">Kliknij gdziekolwiek, inni też to zobaczą</h1>
+    <img src="assets/ball.png" id="ball" style="display: none; pointer-events: none; user-select: none; position: absolute; left: 0; top:0; width:50px; height: 50px;">
+    <img src="assets/pitch.png" id="goal" style="display: none; pointer-events: none; user-select: none; position: absolute; left: 0; top:0;">
+
+    <script src="script.js"></script>
+</body>
+
+</html>

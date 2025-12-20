@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using GotikAniki69.Server.Models;
 
-namespace GotikAniki69.Server;
+namespace GotikAniki69.Server.Serialization;
 
 [JsonSerializable(typeof(CoordinatesModel))]
 [JsonSerializable(typeof(ResponseModel))]
