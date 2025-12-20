@@ -1,13 +1,21 @@
 ﻿using GotikAniki69.Server.Game;
 using GotikAniki69.Server.Web;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace GotikAniki69.Server;
 
 public static class Program
 {
+    private static readonly string[] second =
+    [
+        "application/javascript",
+        "text/javascript",
+        "text/css",
+        "application/json",
+        "application/manifest+json",
+        "image/svg+xml"
+    ];
+
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateSlimBuilder(args);
@@ -16,6 +24,15 @@ public static class Program
 
         builder.Services.AddSingleton<GameState>();
 
+        builder.Services.AddResponseCompression(o =>
+        {
+            o.EnableForHttps = true;
+            o.Providers.Add<BrotliCompressionProvider>();
+            o.Providers.Add<GzipCompressionProvider>();
+
+            o.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(second);
+        });
+
         var app = builder.Build();
 
         app.UseWebSockets(new WebSocketOptions
@@ -23,10 +40,8 @@ public static class Program
             KeepAliveInterval = TimeSpan.FromSeconds(30)
         });
 
-        // statyki z EXE (embedded wwwroot) + "/" => index.html
         app.UseEmbeddedStaticFiles();
 
-        // websocket endpoint 1:1 jak u Ciebie: /ws?name=...&skinId=...
         app.MapGameWebSocket("/ws");
 
         await app.RunAsync();

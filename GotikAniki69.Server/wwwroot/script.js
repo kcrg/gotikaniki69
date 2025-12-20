@@ -9,6 +9,31 @@ const connectionButton = $("connectionButton");
 const nameInput = $("name");
 const skinSelect = $("skinSelect");
 
+const game = $("game");
+const stage = $("stage");
+
+const PITCH_W = 1600;
+const PITCH_H = 800;
+
+let stageScale = 1;
+let stageLeft = 0;
+let stageTop = 0;
+
+function layoutStage() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    stageScale = Math.min(vw / PITCH_W, vh / PITCH_H);
+    stageLeft = (vw - PITCH_W * stageScale) / 2;
+    stageTop = (vh - PITCH_H * stageScale) / 2;
+
+    stage.style.transform =
+        `translate3d(${stageLeft}px, ${stageTop}px, 0) scale(${stageScale})`;
+}
+
+window.addEventListener("resize", layoutStage);
+window.addEventListener("orientationchange", layoutStage);
+
 let socket = null;
 let pointerHandlerAttached = false;
 
@@ -22,16 +47,30 @@ function playSlap(index) {
     const i = (index ?? 2) | 0;
     const key = (i >= 1 && i <= 8) ? i : 2;
 
-    let a = slapAudios.get(key);
-    if (!a) {
-        a = new Audio(`/assets/samples/slap${key}.mp3`);
-        a.preload = "auto";
-        a.volume = 0.5;
-        slapAudios.set(key, a);
-    }
+    slap.src = `/assets/samples/slap${key}.mp3`;
+    slap.volume = 0.5;
 
-    try { a.currentTime = 0; } catch { }
-    a.play().catch(() => { });
+    try { slap.currentTime = 0; } catch { }
+    slap.play().catch(() => { });
+}
+
+const slap = new Audio();
+slap.preload = "auto";
+slap.volume = 0.5;
+
+function unlockAudioIOS() {
+    // musi polecieć wprost z click/tap użytkownika
+    const audios = [audioHello, slap];
+
+    for (const a of audios) {
+        try {
+            a.muted = true;
+            a.play()
+                .then(() => { a.pause(); a.currentTime = 0; })
+                .catch(() => { })
+                .finally(() => { a.muted = false; });
+        } catch { }
+    }
 }
 
 // lekkie throttle na klik (np. 30/s)
@@ -45,18 +84,45 @@ function canSendNow() {
     return true;
 }
 
+function getClientPoint(evt) {
+    // fallback dla Safari / touch
+    if (evt.touches && evt.touches[0]) {
+        return { x: evt.touches[0].clientX, y: evt.touches[0].clientY };
+    }
+    return { x: evt.clientX, y: evt.clientY };
+}
+
 function ensurePointerHandler() {
     if (pointerHandlerAttached) return;
     pointerHandlerAttached = true;
 
-    document.body.addEventListener("pointerdown", (evt) => {
+    const handler = (evt) => {
         if (!socket || socket.readyState !== WebSocket.OPEN) return;
         if (!canSendNow()) return;
 
-        // minimalny payload
-        const msg = { x: evt.clientX - 50, y: evt.clientY - 38 };
-        socket.send(JSON.stringify(msg));
-    }, { passive: true });
+        // na touchstart blokujemy scroll/zoom
+        if (evt.cancelable) evt.preventDefault();
+
+        const p = getClientPoint(evt);
+
+        // screen -> world
+        let wx = (p.x - stageLeft) / stageScale;
+        let wy = (p.y - stageTop) / stageScale;
+
+        // Twoje offsety na gif/tekst
+        wx -= 50;
+        wy -= 38;
+
+        // clamp do boiska
+        wx = Math.max(0, Math.min(PITCH_W, wx));
+        wy = Math.max(0, Math.min(PITCH_H, wy));
+
+        socket.send(JSON.stringify({ x: wx, y: wy }));
+    };
+
+    // pointer events + fallback touch dla iOS/in-app browser
+    game.addEventListener("pointerdown", handler, { passive: false });
+    game.addEventListener("touchstart", handler, { passive: false });
 }
 
 function showInfoOnce() {
@@ -73,6 +139,10 @@ function connect() {
         alert("Wprowadź nick!");
         return;
     }
+
+    unlockAudioIOS();     // <- ważne dla iPhone
+    game.style.display = "block";
+    layoutStage();
 
     landingBlock?.remove();
     showInfoOnce();
@@ -98,8 +168,6 @@ function connect() {
 
         switch (msg.type) {
             case "Hello":
-                if (ball) ball.style.display = "block";
-                if (goal) goal.style.display = "block";
                 audioHello.play().catch(() => { });
                 break;
 
@@ -152,7 +220,7 @@ function onHit(payload) {
 
     container.appendChild(img);
     container.appendChild(text);
-    document.body.appendChild(container);
+    stage.appendChild(container);
 
     // fade-out bez grzebania w inline transition
     // i pewniej niż setTimeout na opacity
@@ -164,7 +232,6 @@ function onHit(payload) {
 
 function showBall(payload) {
     const { x, y } = payload;
-    const ball = document.getElementById('ball');
     if (ball) {
         ball.style.transform = `translate3d(${x}px, ${y}px, 0)`;
     }

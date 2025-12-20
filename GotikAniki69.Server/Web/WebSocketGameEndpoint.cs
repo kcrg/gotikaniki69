@@ -3,8 +3,6 @@ using System.Net.WebSockets;
 using GotikAniki69.Server.Game;
 using GotikAniki69.Server.Models;
 using GotikAniki69.Server.Serialization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
 namespace GotikAniki69.Server.Web;
@@ -74,7 +72,7 @@ public static class WebSocketGameEndpoint
                     if (result.MessageType == WebSocketMessageType.Close)
                         break;
 
-                    if (result.MessageType != WebSocketMessageType.Text || result.EndOfMessage == false)
+                    if (result.MessageType != WebSocketMessageType.Text || !result.EndOfMessage)
                         continue;
 
                     CoordinatesModel? msg;

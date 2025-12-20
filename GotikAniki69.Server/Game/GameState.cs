@@ -10,7 +10,7 @@ public sealed class GameState
     private readonly ConcurrentDictionary<Guid, UserConnection> _connections = new();
     private readonly Random _rng = new();
 
-    private readonly object _ballLock = new();
+    private readonly Lock _ballLock = new();
     private double _ballX = 1000;
     private double _ballY = 400;
 
@@ -73,7 +73,7 @@ public sealed class GameState
         {
             var dx = _ballX - payload.X;
             var dy = _ballY - payload.Y;
-            var dist = Math.Sqrt(dx * dx + dy * dy);
+            var dist = Math.Sqrt((dx * dx) + (dy * dy));
 
             if (dist < 100 && dist > 0.0001)
             {

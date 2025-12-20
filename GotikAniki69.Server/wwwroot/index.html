@@ -3,11 +3,7 @@
 
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#121212">
     <title>Męska zabawa</title>
@@ -153,6 +149,45 @@
             color: grey;
         }
 
+        /* pełny ekran na mobile */
+        #game {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            touch-action: none; /* blokuje pinch/scroll dla pointer events */
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* żeby info nie blokowało tapów */
+        #info {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+        }
+
+        /* “świat” gry */
+        #stage {
+            position: absolute;
+            width: 1600px;
+            height: 800px;
+            transform-origin: 0 0; /* skala od lewego górnego rogu */
+        }
+
+        /* tło */
+        #goal {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1600px;
+            height: 800px;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        /* piłka */
         #ball {
             position: absolute;
             left: 0;
@@ -160,18 +195,9 @@
             width: 50px;
             height: 50px;
             pointer-events: none;
-            user-select: none;
+            -webkit-user-drag: none;
             will-change: transform;
-            transition: transform 100ms linear; /* dostosuj */
-        }
-            #ball.moving {
-                animation: spin 300ms linear infinite;
-            }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+            transition: transform 120ms linear;
     </style>
 </head>
 
@@ -200,8 +226,13 @@
     </div>
 
     <h1 id="info" style="display: none;">Kliknij gdziekolwiek, inni też to zobaczą</h1>
-    <img src="assets/ball.png" id="ball" style="display: none; pointer-events: none; user-select: none; position: absolute; left: 0; top:0; width:50px; height: 50px;">
-    <img src="assets/pitch.png" id="goal" style="display: none; pointer-events: none; user-select: none; position: absolute; left: 0; top:0;">
+
+    <div id="game" style="display:none;">
+        <div id="stage">
+            <img src="/assets/pitch.png" id="goal" alt="">
+            <img src="/assets/ball.png" id="ball" alt="">
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
